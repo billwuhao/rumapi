@@ -8,7 +8,6 @@ class Api:
 
     Rum Api docs: https://github.com/rumsystem/quorum/blob/main/Tutorial.md
     """
-
     def __init__(self, PORT: int, HOST: str, CACERT: str):
         """
         PORT: Local node port number
@@ -19,12 +18,10 @@ class Api:
         self.BASEURL = f"https://{HOST}:{PORT}/api/v1"
         self.session = requests.Session()
         self.session.verify = CACERT
-        self.session.headers.update(
-            {
-                "USER-AGENT": "Rum Api",
-                "Content-Type": "application/json",
-            }
-        )
+        self.session.headers.update({
+            "USER-AGENT": "Rum Api",
+            "Content-Type": "application/json",
+        })
 
     def _get(self, url):
         """url: See below"""
@@ -162,7 +159,7 @@ class Api:
           """
 
         trxs = self._get(f"{self.BASEURL}/group/{group_id}/content")
-        if trxs == None or 'error' in trxs:
+        if trxs is None or 'error' in trxs:
             return []
         else:
             notes = []
@@ -277,7 +274,10 @@ class Api:
         """
         return self._post(f"{self.BASEURL}/group/content", json=data)
 
-    def create_group(self, data: dict[str, str], save: bool = False, seeds_path: str = '') -> dict:
+    def create_group(self,
+                     data: dict[str, str],
+                     save: bool = False,
+                     seeds_path: str = '') -> dict:
         """Owner node create a group.
 
         data: such as:
@@ -300,7 +300,9 @@ class Api:
         """
         seed = self._post(f"{self.BASEURL}/group", json=data)
         if save:
-            with open(seeds_path + seed["group_id"] + ".json", 'w', encoding="utf-8") as f:
+            with open(seeds_path + seed["group_id"] + ".json",
+                      'w',
+                      encoding="utf-8") as f:
                 json.dump(seed, f)
         return seed
 
