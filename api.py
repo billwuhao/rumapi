@@ -1,5 +1,8 @@
 import requests
 import json
+import urllib3
+
+urllib3.disable_warnings()
 
 
 class Api:
@@ -8,10 +11,15 @@ class Api:
 
     Rum Api docs: https://github.com/rumsystem/quorum/blob/main/Tutorial.md
     """
-    def __init__(self, PORT: int, HOST: str, CACERT: str):
+    def __init__(self,
+                 PORT: int,
+                 HOST: str,
+                 CACERT: str,
+                 JWTTOKEN: str = None):
         """
-        PORT: Local node port number
-        HOST: Local loopback address (127.0.0.1)
+        PORT: Node port number
+        HOST: Local loopback address (127.0.0.1) or server public IP, 
+            'HOST' is server public IP, the 'JWTTOKEN' parameter is required
         CACERT: Absolute path of security certificate "server.crt"
         """
 
@@ -21,6 +29,7 @@ class Api:
         self.session.headers.update({
             "USER-AGENT": "Rum Api",
             "Content-Type": "application/json",
+            "Authorization": f"Bearer {JWTTOKEN}"
         })
 
     def _get(self, url):
@@ -305,6 +314,10 @@ class Api:
                       encoding="utf-8") as f:
                 json.dump(seed, f)
         return seed
+
+    def get_seed(self, group_id: str):
+        """Get the seed of the group"""
+        return self._get(f"{self.BASEURL}/group/{group_id}/seed")
 
     def join_group(self, seed: dict[str, str]) -> dict[str, str]:
         """User node join a group.
