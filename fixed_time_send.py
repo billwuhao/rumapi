@@ -4,11 +4,10 @@ import threading
 from send_images_text import *
 
 
-def cycle_send(second: int, *args):
+def cycle_tasks(second: int, func):
     """Cycle send at a specific interval of seconds."""
-    send_post(*args)
-    print("Start sending")
-    timer = threading.Timer(second, cycle_send, (second,*args))
+    func()
+    timer = threading.Timer(second, cycle_tasks, (second, func))
     timer.start()
 
 
@@ -28,15 +27,3 @@ def get_second(itime: str):
         f" {itime}", "%Y-%m-%d %H:%M:%S")
 
     return (next_time - now_time).total_seconds()
-
-
-def fixed_time_send(itime:str, *args):
-    """Send regularly every day."""
-    second = get_second(itime)
-    # send_post(*args)
-    # print("Start sending")
-    timer = threading.Timer(second, send_post, args)
-    print(f"Start sending after {second}s")
-    timer.start()
-    time.sleep(86399)
-    cycle_send(86400, *args)
