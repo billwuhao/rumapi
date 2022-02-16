@@ -169,8 +169,8 @@ class Node(BaseAPI):
         """
         return self._post("/api/v1/network/peers", json=peers)
 
-    def ping_peers(self):
-        """"""
+    def pinged_peers(self):
+        """获取可以 ping 的节点"""
         return self._get("/api/v1/network/peers/ping")
 
     def psping(self, peer_id):

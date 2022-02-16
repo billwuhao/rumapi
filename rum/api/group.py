@@ -19,7 +19,7 @@ class Group(BaseAPI):
         reverse: 如果是 True, 从最新的内容开始获取
         trx_id: 某条内容的 ID, 如果提供, 从该条之后(不包含)获取
         num: 要获取内容条数
-        senders: 内容发布/产生者的 ID, 如 {"senders": ["string"]}
+        senders: 内容发布/产生者的 ID 的列表
             如果提供, 获取列表 ["string"] 中 发布/产生者 发布或产生的内容
 
         返回值字段:
@@ -39,7 +39,7 @@ class Group(BaseAPI):
 
         return self._post(
             f"/app/api/v1/group/{group_id}/content?{reverse}{trx_id}{num}",
-            json=senders)
+            json=Munch(senders=senders))
         # 调试用 API
         # return self._get(f"/api/v1/group/{group_id}/content")
 
@@ -174,7 +174,7 @@ class Group(BaseAPI):
                          "id": group_id,
                          "type": "Group"
                      })
-        return self._post(f"/api/v1/group/content", data)
+        return self._post(f"/api/v1/group/content", json=data)
 
     def like(self, group_id, trx_id):
         """点赞某个组的某条内容"""
@@ -196,10 +196,9 @@ class Group(BaseAPI):
 
         返回值 {"trx_id": "string"}
         """
-        obj = Munch(type="Note",
-                    content=text,
-                    name=title,
-                    image=image_objs(images))
+        if images is not None:
+            images = image_objs(images)
+        obj = Munch(type="Note", content=text, name=title, image=images)
         if trx_id is not None:
             obj.inreplyto = {"trxid": trx_id}
         return self._send(group_id, obj)
@@ -330,9 +329,16 @@ class Group(BaseAPI):
 
         更新成功, 返回值: {'trx_id': 'string'}
         """
-        data = Munch(group_id=group_id, name=name, image=image_obj(image))
+        if image is not None:
+            image = image_obj(image)
+        data = Munch(type='Update',
+                     person=Munch(name=name, image=image),
+                     target={
+                         'id': group_id,
+                         'type': 'Group'
+                     })
         if mixin_id is not None:
-            data.wallet = {
+            data.person.wallet = {
                 "id": mixin_id,
                 "type": "mixin",
                 "name": "mixin messenger"

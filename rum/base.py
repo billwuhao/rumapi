@@ -25,6 +25,42 @@ class Rum:
 
         self.baseurl = f"https://{host}:{port}"
 
+        self.nodeinfo = self.node.info
+        self.network = self.node.network
+        self.join_group = self.node.join_group
+        self.create_group = self.node.create_group
+        self.groups = self.node.groups
+        self.backup = self.node.backup
+        self.add_peers = self.node.add_peers
+        self.pinged_peers = self.node.pinged_peers
+        self.psping = self.node.psping
+        self.refresh_token = self.node.refresh_token
+        self.content = self.group.content
+        self.seed = self.group.seed
+        self.clear = self.group.clear
+        self.leave = self.group.leave
+        self.startsync = self.group.startsync
+        self.block = self.group.block
+        self.trx = self.group.trx
+        self.like = self.group.like
+        self.dislike = self.group.dislike
+        self.send = self.group.send
+        self.announce = self.group.announce
+        self.announced_producers = self.group.announced_producers
+        self.announced_users = self.group.announced_users
+        self.producers = self.group.producers
+        self.update_user = self.group.update_user
+        self.update_producer = self.group.update_producer
+        self.update_profile = self.group.update_profile
+        self.deniedlist = self.group.deniedlist
+        self.update_deniedlist = self.group.update_deniedlist
+        self.configs = self.group.configs
+        self.config = self.group.config
+        self.update_config = self.group.update_config
+        self.schema = self.group.schema
+        self.update_schema = self.group.update_schema
+
+
     def _request(self, method, url, **kwargs):
         resp = self._session.request(method=method,
                                      url=self.baseurl + url,
