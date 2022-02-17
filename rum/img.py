@@ -80,7 +80,7 @@ def image_objs(images):
     kb = int(200 // len(images))
     image_objs = []
     for i in images:
-        image_obj = image_obj(i, kb=kb)
-        image_objs.append(image_obj)
+        image = image_obj(i, kb=kb)
+        image_objs.append(image)
 
     return image_objs
