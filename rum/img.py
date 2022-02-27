@@ -9,7 +9,6 @@ import io
 import os
 from PIL import Image
 from datetime import datetime
-from pytest import Instance
 import urllib3
 from pygifsicle import gifsicle
 
@@ -59,34 +58,43 @@ def zip_image(img_bytes, kb=200):
         return im.getvalue()
 
 
-def zip_gif(gif, kb=200, width=250, cover=True):
-    """压缩动图(gif)到指定大小和尺寸以下
+def zip_gif(gif, kb=200, cover=False):
+    """压缩动图(gif)到指定大小(kb)以下
     
     gif: gif 格式动图本地路径
     kb: 指定压缩大小, 默认 200kb
-    width: 指定宽度, 会保留图片纵横比
-    cover: 是否覆盖原图, 默认覆盖
+    cover: 是否覆盖原图, 默认不覆盖
 
     返回压缩后图片字节
 
     该方法需要安装 gifsicle 软件和 pygifsicle 模块
     """
+
+    size = os.path.getsize(gif) / 1024
+    if size < kb:
+        return image_to_bytes(gif)
+
     destination = None
     if not cover:
         destination = f"{os.path.splitext(gif)[0]}-zip.gif"
-    gifsicle(gif,
-             destination=destination,
-             optimize=True,
-             options=["--lossy=100", "--resize-width",
-                      str(width)])
-    if not cover:
-        gif = destination
 
-    size = os.path.getsize(gif) / 1024
+    n = 0.9
     while size >= kb:
-        gifsicle(gif, optimize=True, options=["--scale", "0.9"])
-        size = os.path.getsize(gif) / 1024
-    return image_to_bytes(gif)
+        gifsicle(gif,
+                 destination=destination,
+                 optimize=True,
+                 options=["--lossy=80", "--scale",
+                          str(n)])
+        if cover:
+            size = os.path.getsize(gif) / 1024
+        else:
+            size = os.path.getsize(destination) / 1024
+        n -= 0.05
+
+    if cover:
+        return image_to_bytes(gif)
+    else:
+        return image_to_bytes(destination)
 
 
 def image_obj(image, kb=200):
