@@ -13,11 +13,11 @@ class Group(BaseAPI):
                 trx_id=None,
                 num=None,
                 senders=None):
-        """按条件获取某个组的内容, 默认获取全部内容
+        """按条件获取某个组的内容, 默认获取最前面的 20 条内容
         
         group_id: 组的 ID
         reverse: 如果是 True, 从最新的内容开始获取
-        trx_id: 某条内容的 ID, 如果提供, 从该条之后(不包含)获取
+        trx_id: 某条内容的 ID, 如果提供, 从该条之后(包含)获取
         num: 要获取内容条数
         senders: 内容发布/产生者的 ID 的列表
             如果提供, 获取列表 ["string"] 中 发布/产生者 发布或产生的内容
@@ -34,7 +34,7 @@ class Group(BaseAPI):
         ]
         """
         reverse = "&reverse=true" if reverse else ""
-        trx_id = f"&starttrx={trx_id}" if trx_id else ""
+        trx_id = f"&includestarttrx={trx_id}" if trx_id else ""
         num = f"&num={num}" if trx_id else ""
 
         return self._post(
@@ -190,7 +190,8 @@ class Group(BaseAPI):
         group_id: 组的 ID
         text: 要发送的文本内容
         title: 论坛模板必须提供的文章标题
-        images: 一张或多张(最多4张)图片网址(url)或本地路径组成的列表
+        images: 一张或多张(最多4张)图片网址(url)或本地路径(gif 只能是本地路径), 
+            一张是字符串, 多张则是它们组成的列表
         trx_id: 某条内容(trx)的 ID, 如果提供, 内容将回复给这条指定内容
             text 和 images 必须至少一个不是 None
 
@@ -324,7 +325,8 @@ class Group(BaseAPI):
         
         group_id: 组的 ID
         name: 昵称
-        image: 头像, 图片的网址(url)或本地路径, 不提供, 将使用系统默认头像更新
+        image: 头像, 图片的网址(url)或本地路径(gif 只能是本地路径),
+            不提供, 将使用系统默认头像更新
         mixin_id: mixin 账号 uuid
 
         更新成功, 返回值: {'trx_id': 'string'}
@@ -345,7 +347,7 @@ class Group(BaseAPI):
             }
         return self._post(f"/api/v1/group/profile", json=data)
 
-    def deniedlist(self, group_id):
+    def denylist(self, group_id):
         """获取某个组黑名单列表
         
         返回值字段:
@@ -361,28 +363,41 @@ class Group(BaseAPI):
                 }
             ]
         """
-        return self._get(f"/api/v1/group/{group_id}/deniedlist")
+        return self._get(f"/api/v1/group/{group_id}/trx/denylist")
 
-    def update_deniedlist(self, peer_id, group_id, action='add'):
-        """组创建者将用户加入或移除黑名单列表
+    def allowlist(self, group_id):
+        """获取某个组授权列表
         
-        peer_id: 用户节点 ID
         group_id: 组 ID
-        action: "add" 或 "del", 加入或移除
+
+        返回值字段:
+            [
+                {
+                    "GroupId": "string",
+                    "PeerId": "string",
+                    "GroupOwnerPubkey": "string",
+                    "GroupOwnerSign": "string",
+                    "TimeStamp": 0,
+                    "Action": "add",
+                    "Memo": ""
+                }
+            ]
+        """
+        return self._get(f"/api/v1/group/{group_id}/trx/allowlist")
+
+    def auth_mode(self, group_id, trx_type):
+        """获取某个组身份验证模式
+        
+        group_id: 组 ID
+        trx_type: 内容(trx)类型
 
         返回值字段:
             {
-                "group_id": "string",
-                "peer_id": "string",
-                "owner_pubkey": "string",
-                "sign": "string",
-                "trx_id": "string",
-                "action": "add",
-                "memo": ""
+                TrxType  string
+                AuthType string
             }
         """
-        data = Munch(peer_id=peer_id, group_id=group_id, action=action)
-        return self._post(f"/api/v1/group/deniedlist", json=data)
+        return self._get(f"/api/v1/group/{group_id}/trx/auth/{trx_type}")
 
     def configs(self, group_id):
         """获取组的所有配置项列表
@@ -425,6 +440,13 @@ class Group(BaseAPI):
         value: 配置项的值, 必须与 type 相对应
         action: "add" 或 "del", 增加/修改 或 删除
         memo: 附加信息
+
+        返回值字段:
+            {
+                GroupId string
+                Sign    string
+                TrxId   string
+            }
         """
         data = Munch(group_id=group_id,
                      name=name,
@@ -432,7 +454,7 @@ class Group(BaseAPI):
                      value=value,
                      action=action,
                      memo=memo)
-        return self._post(f"/api/v1/group/config", json=data)
+        return self._post(f"/api/v1/group/appconfig", json=data)
 
     def schema(self, group_id):
         """获取组的概要
@@ -459,11 +481,13 @@ class Group(BaseAPI):
 
         返回值字段:
             {
-                "rule": "string",
-                "type": "string",
-                "group_id": "string",
-                "action": "string",
-                "memo": "string"
+                GroupId     string
+                OwnerPubkey string
+                SchemaType  string
+                SchemaRule  string
+                Action      string
+                Sign        string
+                TrxId       string
             }
         """
         data = Munch(group_id=group_id,

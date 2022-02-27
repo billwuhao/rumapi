@@ -159,7 +159,7 @@ class Node(BaseAPI):
     def add_peers(self, peers):
         """节点增加连接节点, 实现快速连接和同步
         
-        peers: 节点 ID 列表
+        peers: 节点 ID(需要包含 IP 等, 如 "/ip4/110.14.103.110/tcp/1111/16Uiu2H...") 的列表
 
         返回值字段显示成功/未成功添加的节点数:
             {
@@ -176,7 +176,7 @@ class Node(BaseAPI):
     def psping(self, peer_id):
         """ping 一个节点
         
-        peer_id: 节点 ID
+        peer_id: 节点 ID 如 "16Uiu2HAm59mYMPRhrJYw3AFyEuHhcBxbyw85yEk9..."
         
         返回 ttl 值如 {"ttl": [46, 47, 91, 89, 89, 90, 88, 89, 90, 86]}
         """
