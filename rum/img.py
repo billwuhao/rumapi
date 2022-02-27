@@ -45,7 +45,7 @@ def zip_image(img_bytes, kb=200):
     返回压缩后的图片字节
     """
     with io.BytesIO(img_bytes) as im:
-        size = len(im.getvalue()) // 1024
+        size = len(im.getvalue()) / 1024
         if size < kb:
             return img_bytes
         while size >= kb:
@@ -55,7 +55,7 @@ def zip_image(img_bytes, kb=200):
             im.close()
             im = io.BytesIO()
             out.save(im, 'jpeg')
-            size = len(im.getvalue()) // 1024
+            size = len(im.getvalue()) / 1024
         return im.getvalue()
 
 

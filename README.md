@@ -41,7 +41,7 @@ rum.config #获取组某个配置
 rum.update_config #更新组配置
 rum.schema #获取组概要
 rum.update_schema #更新概要
-rum.post("api/v1/group/chainconfig",json=data) #data={"peer_id":"","group_id":""}
-rum.post("api/v1/rex/initsession",json=data)#data={"group_id":"","type":"","config":"","memo":""}
+rum.post("api/v1/group/chainconfig",json=data) #data={"group_id":"","type":"","config":"","memo":""}
+rum.post("api/v1/rex/initsession",json=data)#data={"peer_id":"","group_id":""}
 rum.get("api/v1/rextest")
 ```
