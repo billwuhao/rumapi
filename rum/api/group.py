@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from munch import Munch
-from rum.img import image_obj, image_objs
+from rum.img import image_obj, image_objs, group_icon
 from rum.api.base import BaseAPI
 
 
@@ -431,15 +431,25 @@ class Group(BaseAPI):
         """
         return self._get(f"/api/v1/group/{group_id}/config/{keyname}")
 
-    def update_config(self, group_id, name, type, value, action, memo):
+    def update_config(self,
+                      group_id,
+                      name='group_desc',
+                      type='string',
+                      value='增加组的简介',
+                      action='add',
+                      memo='add',
+                      image=None):
         """组创建者更新组的某个配置项
         
         group_id: 组的 ID
-        name: 配置项的名称
+        name: 配置项的名称, 目前支持 'group_announcement'(组的公告),
+            'group_desc'(组的简介),'group_icon'(组的图标), 均是 "string" 类型
         type: 配置项的类型, 可选值为 "int", "bool", "string"
         value: 配置项的值, 必须与 type 相对应
         action: "add" 或 "del", 增加/修改 或 删除
         memo: 附加信息
+        image: 一张图片的网址(url)或本地路径(gif 只能是本地路径),
+            如果提供该参数, name 必须是 'group_icon'
 
         返回值字段:
             {
@@ -448,6 +458,8 @@ class Group(BaseAPI):
                 TrxId   string
             }
         """
+        if image is not None:
+            value = group_icon(image=image)
         data = Munch(group_id=group_id,
                      name=name,
                      type=type,

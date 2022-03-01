@@ -97,6 +97,22 @@ def zip_gif(gif, kb=200, cover=False):
         return image_to_bytes(destination)
 
 
+def group_icon(image):
+    """将图片处理成组的图标对象
+    
+    image: 一张图片的网址(url)或本地路径(gif 只能是本地路径)
+    """
+    img_bytes = image_to_bytes(image)
+    if filetype.guess(img_bytes).extension == "gif":
+        zimg = zip_gif(image, cover=False)
+    else:
+        zimg = zip_image(img_bytes)
+    icon = (f'data:{filetype.guess(zimg).mime};'
+            f'base64,{base64.b64encode(zimg).decode("utf-8")}')
+
+    return icon
+
+
 def image_obj(image, kb=200):
     """将图片处理成可通过 RUM API 发送的图片对象, 要求大小小于 200kb
     
@@ -107,12 +123,12 @@ def image_obj(image, kb=200):
         zimg = zip_gif(image, kb=kb, cover=False)
     else:
         zimg = zip_image(img_bytes, kb=kb)
-    image_obj = {
+    im_obj = {
         "mediaType": filetype.guess(zimg).mime,
         "content": base64.b64encode(zimg).decode("utf-8"),
         "name": f"{uuid.uuid4()}-{datetime.now().isoformat()}"
     }
-    return image_obj
+    return im_obj
 
 
 def image_objs(images):
@@ -124,9 +140,9 @@ def image_objs(images):
     if isinstance(images, str):
         images = [images]
     kb = int(200 // len(images))
-    image_objs = []
+    im_objs = []
     for i in images:
         image = image_obj(i, kb=kb)
-        image_objs.append(image)
+        im_objs.append(image)
 
-    return image_objs
+    return im_objs
