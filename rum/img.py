@@ -22,7 +22,6 @@ def image_to_bytes(image):
     """获取图片字节
 
     image: 图片网络地址 url 或本地路径
-    headers: 获取网络图片的请求头
     """
     # download image from url
     if image.startswith(('http://', 'https://')):
@@ -85,16 +84,12 @@ def zip_gif(gif, kb=200, cover=False):
                  optimize=True,
                  options=["--lossy=80", "--scale",
                           str(n)])
-        if cover:
-            size = os.path.getsize(gif) / 1024
-        else:
-            size = os.path.getsize(destination) / 1024
+        if not cover:
+            gif = destination
+        size = os.path.getsize(gif) / 1024
         n -= 0.05
 
-    if cover:
-        return image_to_bytes(gif)
-    else:
-        return image_to_bytes(destination)
+    return image_to_bytes(gif)
 
 
 def group_icon(image):

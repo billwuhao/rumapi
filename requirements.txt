@@ -2,3 +2,4 @@ filetype
 Pillow
 urllib3
 munch
+pygifsicle
