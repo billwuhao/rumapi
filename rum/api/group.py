@@ -20,7 +20,7 @@ class Group(BaseAPI):
         trx_id: 某条内容的 ID, 如果提供, 从该条之后(包含)获取
         num: 要获取内容条数
         senders: 内容发布/产生者的 ID 的列表
-            如果提供, 获取列表 ["string"] 中 发布/产生者 发布或产生的内容
+            如果提供, 获取列表中 发布/产生者 发布或产生的内容
 
         返回值字段:
         [
@@ -35,7 +35,7 @@ class Group(BaseAPI):
         """
         reverse = "&reverse=true" if reverse else ""
         trx_id = f"&includestarttrx={trx_id}" if trx_id else ""
-        num = f"&num={num}" if trx_id else ""
+        num = f"&num={num}" if num else ""
 
         return self._post(
             f"/app/api/v1/group/{group_id}/content?{reverse}{trx_id}{num}",
