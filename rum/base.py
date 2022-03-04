@@ -6,6 +6,12 @@ from rum.api import Group, Node
 
 class Rum:
     def __init__(self, host, port, crtfile, jwt_token=None):
+        """
+        host: IP 地址, 本地一般是 127.0.0.1, 服务器是公网 IP
+        port: 端口号
+        crtfile: 证书文件 server.crt 绝对路径
+        jwt_token: 用于远程登录身份验证的令牌
+        """
         self.group = Group(self)
         self.node = Node(self)
 
@@ -25,6 +31,7 @@ class Rum:
 
         self.baseurl = f"https://{host}:{port}"
 
+        # 方法列表
         self.nodeinfo = self.node.info
         self.network = self.node.network
         self.join_group = self.node.join_group
@@ -60,7 +67,6 @@ class Rum:
         self.update_config = self.group.update_config
         self.schema = self.group.schema
         self.update_schema = self.group.update_schema
-
 
     def _request(self, method, url, **kwargs):
         resp = self._session.request(method=method,
