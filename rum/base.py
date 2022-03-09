@@ -59,6 +59,7 @@ class Rum:
         self.update_user = self.group.update_user
         self.update_producer = self.group.update_producer
         self.update_profile = self.group.update_profile
+        self.chainconfig = self.group.chainconfig
         self.denylist = self.group.denylist
         self.allowlist = self.group.allowlist
         self.auth_mode = self.group.auth_mode

@@ -347,18 +347,80 @@ class Group(BaseAPI):
             }
         return self._post(f"/api/v1/group/profile", json=data)
 
+    def chainconfig(self,
+                    group_id,
+                    type='set_trx_auth_mode',
+                    trx_type='post',
+                    trx_auth_mode='follow_alw_list',
+                    action='add',
+                    pubkey=None,
+                    memo=''):
+        """组创建者配置内容授权方式或更新黑/白名单
+        
+        group_id: 组的 ID
+        type: 配置类型, "set_trx_auth_mode"(配置规则), "upd_alw_list"(更新白名单), 
+            "upd_dny_list"(更新黑名单)
+        trx_type: 可配置的内容(trx)类型, 有 "post", "announce",
+            "req_block_forward", "req_block_backward",
+            "block_synced", "block_produced", "ask_peerid",
+            如果 type 是 "set_trx_auth_mode", 则只能是上述中的一个且是字符串,
+            否则, 可以是它们中的一个或多个组成的列表
+        trx_auth_mode: 内容(trx)授权方式, "follow_alw_list"(白名单方式), 
+            "follow_dny_list"(黑名单方式)
+        action: "add"(添加), "remove"(移除)
+        pubkey: 要添加或删除的用户的 ID
+        memo: Memo
+
+        如果 type 是 "set_trx_auth_mode", 则 trx_type 和 trx_auth_mode 必须提供
+
+        如果 type 是 "upd_alw_list" 或 "upd_dny_list", 则 action, trx_type, pubkey 
+        必须提供, 即将某个用户加入/移除某个(些) trx_type 白名单或黑名单
+
+        组创建之后, 所有类型的内容(trx)的授权方式默认都是黑名单方式, 
+        用户成为组的用户之后, 自动获得所有授权, 除非被加入黑名单; 
+        
+        某个类型 trx 授权方式修改为白名单方式后, 所有用户失去该类型 trx 
+        的操作权限, 除非被加入白名单; 
+        
+        白名单优先级最高，某个用户被加入某个(些) trx 类型的白名单后, 无论授权方式是什么,
+        也无论该用户是否在该类型的黑名单中, 总是拥有权限, 避免混淆, 应小心配置;
+
+        该方法默认将 "post" 配置为白名单方式, 之后如果将某个用户加入白名单,
+        则只有该用户有权发送内容到组内
+
+        返回值字段:
+            {
+                "group_id": "string",
+                "owner_pubkey": "string",
+                "signature": "string",
+                "trx_id": "string"
+            }
+        """
+        if type == 'set_trx_auth_mode':
+            config = Munch(trx_type=trx_type, trx_auth_mode=trx_auth_mode)
+        else:
+            if isinstance(trx_type, str):
+                trx_type = [trx_type]
+            config = Munch(trx_type=trx_type, action=action, pubkey=pubkey)
+
+        data = Munch(group_id=group_id,
+                     type=type,
+                     config=str(dict(config)).replace("'", '"'),
+                     memo=memo)
+
+        return self._post(f"/api/v1/group/chainconfig", json=data)
+
     def denylist(self, group_id):
-        """获取某个组黑名单列表
+        """获取某个组的黑名单
         
         返回值字段:
             [
                 {
-                    "GroupId": "string",
-                    "PeerId": "string",
+                    "Pubkey": "string",
+                    "TrxType": ["string"],
                     "GroupOwnerPubkey": "string",
                     "GroupOwnerSign": "string",
                     "TimeStamp": 0,
-                    "Action": "add",
                     "Memo": ""
                 }
             ]
@@ -366,19 +428,18 @@ class Group(BaseAPI):
         return self._get(f"/api/v1/group/{group_id}/trx/denylist")
 
     def allowlist(self, group_id):
-        """获取某个组授权列表
+        """获取某个组的白名单
         
         group_id: 组 ID
 
         返回值字段:
             [
                 {
-                    "GroupId": "string",
-                    "PeerId": "string",
+                    "Pubkey": "string",
+                    "TrxType": ["string"],
                     "GroupOwnerPubkey": "string",
                     "GroupOwnerSign": "string",
                     "TimeStamp": 0,
-                    "Action": "add",
                     "Memo": ""
                 }
             ]
@@ -386,10 +447,12 @@ class Group(BaseAPI):
         return self._get(f"/api/v1/group/{group_id}/trx/allowlist")
 
     def auth_mode(self, group_id, trx_type):
-        """获取某个组身份验证模式
+        """获取某个组某个 trx 类型的授权方式
         
         group_id: 组 ID
-        trx_type: 内容(trx)类型
+        trx_type: 内容(trx)类型, 有 "post", "announce",
+            "req_block_forward", "req_block_backward",
+            "block_synced", "block_produced", "ask_peerid"
 
         返回值字段:
             {

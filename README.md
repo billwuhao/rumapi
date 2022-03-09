@@ -33,15 +33,14 @@ rum.producers #获取已批准 producers
 rum.update_user #添加或删除私有组用户
 rum.update_producer #添加或删除 producer
 rum.update_profile #更新某个组用户配置
+rum.chainconfig #配置内容授权方式或更新黑/白名单
 rum.denylist #获取某个组黑名单
-rum.allowlist #获取某个组授权列表
-rum.auth_mode #获取某个组身份验证模式
+rum.allowlist #获取某个组白名单
+rum.auth_mode #获取某个组某个 trx 类型的授权方式
 rum.configs #获取组配置列表
 rum.config #获取组某个配置
 rum.update_config #更新组配置
 rum.schema #获取组概要
 rum.update_schema #更新概要
-rum.post("api/v1/group/chainconfig",json=data) #data={"group_id":"","type":"","config":"","memo":""}
 rum.post("api/v1/rex/initsession",json=data)#data={"peer_id":"","group_id":""}
-rum.get("api/v1/rextest")
 ```
