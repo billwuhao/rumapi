@@ -40,7 +40,9 @@ rum.auth_mode #获取某个组某个 trx 类型的授权方式
 rum.configs #获取组配置列表
 rum.config #获取组某个配置
 rum.update_config #更新组配置
-rum.schema #获取组概要
-rum.update_schema #更新概要
+rum.schema #获取组 schema
+rum.update_schema #更新 schema
 rum.post("api/v1/rex/initsession",json=data)#data={"peer_id":"","group_id":""}
 ```
+
+更多信息查看 [RUM 开发教程中文翻译](Tutorial-cn.md)

@@ -74,6 +74,7 @@
     - [完全拒绝一个用户](#完全拒绝一个用户)
     - [再次授予一个用户所有权限](#再次授予一个用户所有权限)
     - [怎样设置单一作者模式](#怎样设置单一作者模式)
+- [用自己擅长的语言开发](#用自己擅长的语言开发)
 - [附录](#附录)
     - [group_id](#group_id)
     - [group_name](#group_name)
@@ -212,7 +213,7 @@ curl -k -X GET -H 'Content-Type: application/json' -d '{}' https://127.0.0.1:800
 
 # 组
 
-`组`是直译的名称，按照 RUM 的设计，组应该叫 RUM 网络系统的`应用`（App）更恰当，因为每个组都可以添加各种配置（Appconfig，Schema，Chainconfig）以进行定制化开发，使之成为你想要实现的应用。为了方便理解，我们后面也称之为`组`。
+`组`是直译的名称，按照 RUM 的设计，组应该叫 RUM 系统网络的`应用`（App）更恰当，因为每个组都可以添加各种配置（Appconfig，Schema，Chainconfig）以进行定制化开发，使之成为你想要实现的应用。为了方便理解，我们后面也称之为`组`。
 
 ## 创建一个组
 
@@ -276,7 +277,7 @@ curl -k -X POST -H "Content-Type: application/json" -d "{\"group_name\":\"my_tes
 
 部分参数介绍:
 * genesis_block： 创世区块，该组的第一个区块
-- BlockId： `块ID`
+- BlockId： `块 ID`
 - ProducerPubKey： Producer 的 `用户公钥`，Producer 可理解为出块者，新建组 Producer 是组的创建者
 * group_id： `组 ID`（记住这个 ID，后面很多操作都需要这个参数，并记得将下列 API 中的 组 ID 换成这个）
 - owner_pubkey： 创建者的 `用户公钥`
@@ -368,7 +369,7 @@ curl -k -X GET -H 'Content-Type: application/json' -d '{}' https://127.0.0.1:800
 部分参数介绍:
 * last_updated 组内最新 Trx 上链时间
 * highest_height 该组中 “最高” 区块的高度
-* highest_block_id 该组中 “最高” 区块 `区块ID`
+* highest_block_id 该组中 “最高” 区块 `区块 ID`
 
 [>>> 回到目录](#top)
 
@@ -870,7 +871,7 @@ senders 参数如：
 - 方法: GET
 - 参数:
   - group_id `组 ID`
-  - block_id `块ID`
+  - block_id `块 ID`
 
 **Example**:
 
@@ -1726,6 +1727,35 @@ curl -k -X POST -H 'Content-Type: application/json' -d '{"group_id":"b3e1800a-af
 
 [>>> 回到目录](#top)
 
+# 用自己擅长的语言开发
+
+如果看到这里，欢迎你加入到 RUM 网络应用开发中来。然后，你可以：
+
+1. 直接下载 [rum-app](https://docs.prsdev.club/#/rum-app/test)，或者自行编译 [quorum](https://github.com/rumsystem/quorum)
+2. 运行 rum-app 或 启动你编译的 quorum 加入到 RUM 系统网络中来。你可以使用我们的公开节点 `/ip4/94.23.17.189/tcp/10666/p2p/16Uiu2HAmGTcDnhj3KVQUwVx8SGLyKBXQwfAxNayJdEwfsnUYKK4u` 或其他在线节点作为引导节点（`bootstrap`）启动 quorum
+3. 采用你擅长的语言连接你启动的节点，进行开发。以 Python 为例：
+
+```python
+"""
+PORT: int，本地启动的 Rum 节点的 端口号，该端口号启动时自动生成（rum-app）或自定义（quorum）
+HOST: str，本地 IP，通常是 127.0.0.1
+CACERT: str，本地启动的 Rum 节点的证书文件（server.crt）的绝对路径
+"""
+
+import requests
+
+url = f"https://{HOST}:{PORT}"
+session = requests.Session()
+session.verify = CACERT
+session.headers.update({
+    "USER-AGENT": "RUMAPI",
+    "Content-Type": "application/json"})
+
+session.get(f"{url}/api/v1/node")
+```
+
+[>>> 回到目录](#top)
+
 # 附录
 
 ### group_id
@@ -1802,3 +1832,4 @@ Trx 的唯一身份标识。
 - "FOLLOW_DNY_LIST"
 
 [>>> 回到目录](#top)
+
