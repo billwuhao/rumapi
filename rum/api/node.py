@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from munch import Munch
 from rum.api.base import BaseAPI
 

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 class BaseAPI:
     def __init__(self, rum=None):
         self._rum = rum

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import base64
 import uuid
 import filetype
@@ -127,7 +125,7 @@ def image_obj(image, kb=200):
 
 
 def image_objs(images):
-    """将一张或多张图片处理成可通过 RUM API 发送的图片对象列表, 要求总大小小于 200kb
+    """将一张或多张图片处理成可通过 RUM API 发送的图片对象列表
     
     images: 一张或多张(最多4张)图片网址(url)或本地路径(gif 只能是本地路径), 
         一张是字符串, 多张则是它们组成的列表

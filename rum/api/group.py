@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from munch import Munch
 from rum.img import image_obj, image_objs, group_icon
 from rum.api.base import BaseAPI
@@ -377,7 +375,7 @@ class Group(BaseAPI):
         必须提供, 即将某个用户加入/移除某个(些) trx_type 白名单或黑名单
 
         组创建之后, 所有类型的内容(trx)的授权方式默认都是黑名单方式, 
-        用户成为组的用户之后, 自动获得所有授权, 除非被加入黑名单; 
+        成为组的用户之后, 自动获得所有授权, 除非被加入黑名单; 
         
         某个类型 trx 授权方式修改为白名单方式后, 所有用户失去该类型 trx 
         的操作权限, 除非被加入白名单; 
