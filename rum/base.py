@@ -1,6 +1,6 @@
 import requests
 from rum.api import Group, Node
-
+from rum.paidgroup import *
 
 class Rum:
     def __init__(self, host, port, crtfile, jwt_token=None):
@@ -18,14 +18,17 @@ class Rum:
         self._session.keep_alive = False
         requests.adapters.DEFAULT_RETRIES = 5
 
-        self._session.headers.update({
-            "USER-AGENT": "rum.api",
-            "Content-Type": "application/json",
-            "accept": "application/json"
-        })
-        if jwt_token is not None:
-            self._session.headers.update(
-                {"Authorization": f"Bearer {jwt_token}"})
+        self._session.headers.update(
+            {
+                "USER-AGENT": "rum.api",
+                "Content-Type": "application/json",
+                "accept": "application/json",
+            }
+        )
+        self.jwt_token = jwt_token
+
+        if self.jwt_token is not None:
+            self._session.headers.update({"Authorization": f"Bearer {self.jwt_token}"})
 
         self.baseurl = f"https://{host}:{port}"
 
@@ -35,7 +38,6 @@ class Rum:
         self.join_group = self.node.join_group
         self.create_group = self.node.create_group
         self.groups = self.node.groups
-        self.backup = self.node.backup
         self.add_peers = self.node.add_peers
         self.pinged_peers = self.node.pinged_peers
         self.psping = self.node.psping
@@ -53,6 +55,7 @@ class Rum:
         self.announce = self.group.announce
         self.announced_producers = self.group.announced_producers
         self.announced_users = self.group.announced_users
+        self.announced_user = self.group.announced_user
         self.producers = self.group.producers
         self.update_user = self.group.update_user
         self.update_producer = self.group.update_producer
@@ -64,13 +67,23 @@ class Rum:
         self.configs = self.group.configs
         self.config = self.group.config
         self.update_config = self.group.update_config
-        self.schema = self.group.schema
-        self.update_schema = self.group.update_schema
+        self.stats = self.node.stats
+        self.pubqueue = self.group.pubqueue
+        self.ack = self.node.ack
+        self.paidgroup_dapp = paidgroup_dapp
+        self.paidgroup_info = paidgroup_info
+        self.check_payment = check_payment
+        self.announce_paidgroup = announce_paidgroup
+        self.pay_paidgroup = pay_paidgroup
+        self.send_file = self.group.send_file
+        self.load_files = self.group.load_files
+        # self.relays = self.node.relays
+        # self.req_relay = self.node.req_relay
+        # self.approve_relay = self.node.approve_relay
+        # self.del_relay = self.node.del_relay
 
     def _request(self, method, url, **kwargs):
-        resp = self._session.request(method=method,
-                                     url=self.baseurl + url,
-                                     **kwargs)
+        resp = self._session.request(method=method, url=self.baseurl + url, **kwargs)
         return resp.json()
 
     def get(self, url):
@@ -78,3 +91,6 @@ class Rum:
 
     def post(self, url, **kwargs):
         return self._request("post", url, **kwargs)
+
+    def delete(self, url):
+        return self._request("delete", url)

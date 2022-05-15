@@ -7,3 +7,7 @@ class BaseAPI:
 
     def _post(self, url, **kwargs):
         return self._rum.post(url, **kwargs)
+
+    @property
+    def jwt_token(self):
+        return self._rum.jwt_token
