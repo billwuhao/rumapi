@@ -14,7 +14,7 @@ class Rum:
         self.node = Node(self)
 
         self._session = requests.Session()
-        self._session.verify = crtfile
+        self._session.verify = True
         self._session.keep_alive = False
         requests.adapters.DEFAULT_RETRIES = 5
 
@@ -30,7 +30,7 @@ class Rum:
         if self.jwt_token is not None:
             self._session.headers.update({"Authorization": f"Bearer {self.jwt_token}"})
 
-        self.baseurl = f"https://{host}:{port}"
+        self.baseurl = f"http://{host}:{port}"
 
         # 方法列表
         self.nodeinfo = self.node.info

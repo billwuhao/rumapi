@@ -96,7 +96,7 @@ class Node(BaseAPI):
                 "user_pubkey": "string"
             }
         """
-        return self._post("/api/v1/group/join", json=seed)
+        return self._post("/api/v2/group/join", json=seed)
 
     def create_group(
         self,
