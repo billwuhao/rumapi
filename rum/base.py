@@ -3,18 +3,16 @@ from rum.api import Group, Node
 from rum.paidgroup import *
 
 class Rum:
-    def __init__(self, host, port, crtfile, jwt_token=None):
+    def __init__(self, host, port, jwt_token=None):
         """
-        host: IP 地址, 本地一般是 127.0.0.1, 服务器是公网 IP
+        host: IP 地址, 本地一般是 http://127.0.0.1, 远程连接 http/https://IP
         port: 端口号
-        crtfile: 证书文件 server.crt 绝对路径
         jwt_token: 用于远程登录身份验证的令牌
         """
         self.group = Group(self)
         self.node = Node(self)
 
         self._session = requests.Session()
-        self._session.verify = True
         self._session.keep_alive = False
         requests.adapters.DEFAULT_RETRIES = 5
 
@@ -30,7 +28,7 @@ class Rum:
         if self.jwt_token is not None:
             self._session.headers.update({"Authorization": f"Bearer {self.jwt_token}"})
 
-        self.baseurl = f"http://{host}:{port}"
+        self.baseurl = f"{host}:{port}"
 
         # 方法列表
         self.nodeinfo = self.node.info
